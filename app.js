@@ -10,6 +10,12 @@ app.get('/', (req, res) => {
   })
 });
 
+app.get('/endpoint', (req, res) => {
+  res.send({
+    message: 'Welcome to the Endpoint of this App',
+  });
+});
+
 app.use((req, res, next) => {
   next(errorHandler.NotFound());
 });
