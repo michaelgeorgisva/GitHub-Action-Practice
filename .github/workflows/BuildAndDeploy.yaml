@@ -1,0 +1,51 @@
+name: Build and Deploy using Cloud Build and Cloud Run
+
+on:
+  push:
+    branches:
+      - 'features'
+  pull_request:
+    branches:
+      - 'main'
+
+env:
+  PROJECT_ID: heroic-arbor-349007
+  SERVICE_NAME: simple-app
+
+
+jobs:
+  setup-auth-build-deploy:
+    name: Auth, Build and Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Google Cloud Authentication
+        uses: 'google-github-actions/auth@v0'
+        with: 
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+
+      - name: Build with Google Cloud Build
+        run: |-
+          gcloud builds submit \
+            --quiet \
+            --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:latest" . 
+
+      - name: Deploy With Google Cloud Run
+        run: |-
+          gcloud run deploy $SERVICE_NAME \
+            --port=8080 \
+            --min-instances=0 \
+            --max-instances=1 \
+            --region asia-southeast2 \
+            --allow-unauthenticated \
+            --image=gcr.io/$PROJECT_ID/$SERVICE_NAME:latest
