@@ -1,9 +1,6 @@
 name: Build and Deploy using Cloud Build and Cloud Run
 
 on:
-  push:
-    branches:
-      - 'features'
   pull_request:
     branches:
       - 'main'
