@@ -16,12 +16,14 @@ app.get('/endpoint', (req, res) => {
   });
 });
 
+
 app.get('/endpoint/:name', (req, res) => {
   const { name } = req.params;
   res.send({
     message: `Welcome to the Endpoint of this App ${name}`,
   });
 });
+
 
 app.use((req, res, next) => {
   next(errorHandler.NotFound());
